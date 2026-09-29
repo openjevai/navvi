@@ -25,6 +25,8 @@
 
 ![Compile a Hacker News scraper with Jev, re-run it with zero LLM calls, self-heal after a redesign](docs/product-hn.gif)
 
+> **OpenJEV support:** Jev is built by [TypeSafe](https://typesafe.ai). This fork keeps TypeSafe as the default and adds optional support for [OpenJEV](https://openjev.sh), a free community gateway to the same Jev model — set `OPENJEV_API_KEY` (or `--decider-transport openjev`) to use it. Original project: https://github.com/fellowship-dev/navvi by @fellowship-dev.
+
 ## Why use Jev
 
 A scraper compiler makes a lot of small decisions: which element is the price,

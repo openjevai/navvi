@@ -48,8 +48,8 @@ describe(".actor/input_schema.json", () => {
     expect(schema.properties.decider?.enum).not.toContain("agent");
     expect(schema.properties.writer?.enum).toEqual(["model"]);
     for (const name of ["jev", "agent", "claude", "codex"]) expect(schema.properties.writer?.enum).not.toContain(name);
-    expect(schema.properties.deciderTransport?.enum).toEqual(["gateway", "typesafe"]);
-    for (const key of ["typesafeApiKey", "gatewayApiKey", "anthropicApiKey"]) expect(schema.properties[key]?.isSecret, key).toBe(true);
+    expect(schema.properties.deciderTransport?.enum).toEqual(["gateway", "typesafe", "openjev"]);
+    for (const key of ["typesafeApiKey", "gatewayApiKey", "openjevApiKey", "anthropicApiKey"]) expect(schema.properties[key]?.isSecret, key).toBe(true);
     expect(schema.properties.scriptId?.pattern).toBeTruthy();
     expect(new RegExp(schema.properties.scriptId!.pattern!).test("scraper-cache/python.org-jobs-abc")).toBe(true);
     expect(new RegExp(schema.properties.scriptId!.pattern!).test("a/b/c")).toBe(false);

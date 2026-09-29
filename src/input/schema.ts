@@ -35,7 +35,7 @@ export const WRITERS = ["agent", "model", "claude", "codex"] as const;
  * `local` yet: the value is documented, not enumerated, so no configuration
  * can select a backend that would throw at run time.
  */
-export const TRANSPORTS = ["gateway", "typesafe"] as const;
+export const TRANSPORTS = ["gateway", "typesafe", "openjev"] as const;
 
 export const PROFILES = ["store", "local"] as const;
 
@@ -294,7 +294,7 @@ export interface AvailableClis {
  * chooser. `available` comes from `probeCli`; unknown means not available.
  */
 export function defaultChooser(env: NodeJS.ProcessEnv = process.env, available: AvailableClis = {}): Chooser {
-  if (env.AI_GATEWAY_API_KEY || env.TYPESAFE_API_KEY) return "jev";
+  if (env.AI_GATEWAY_API_KEY || env.TYPESAFE_API_KEY || env.OPENJEV_API_KEY) return "jev";
   if (env.ANTHROPIC_API_KEY) return "model";
   if (available.claude) return "claude";
   if (available.codex) return "codex";
@@ -336,7 +336,7 @@ export function resolveSources(input: SourceInput = {}, env: NodeJS.ProcessEnv =
 
 /** True when a key selects the chooser and no CLI probe is needed. */
 export function hasChooserKey(env: NodeJS.ProcessEnv = process.env): boolean {
-  return Boolean(env.AI_GATEWAY_API_KEY || env.TYPESAFE_API_KEY || env.ANTHROPIC_API_KEY);
+  return Boolean(env.AI_GATEWAY_API_KEY || env.TYPESAFE_API_KEY || env.OPENJEV_API_KEY || env.ANTHROPIC_API_KEY);
 }
 
 /** R43: Camoufox locally, Chromium on Apify. */

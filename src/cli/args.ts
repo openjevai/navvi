@@ -482,8 +482,8 @@ and make refuses the plain command's --mode, --fields, --goal, --max-pages, --ma
 
 Sources (who answers the compile questions)
   --decider <name>          Who answers the structured questions (pick one of N, yes/no, a score):
-                            agent, jev, model, claude, codex. Default: jev with AI_GATEWAY_API_KEY or
-                            TYPESAFE_API_KEY; model with ANTHROPIC_API_KEY; else claude or codex when that CLI
+                            agent, jev, model, claude, codex. Default: jev with AI_GATEWAY_API_KEY,
+                            TYPESAFE_API_KEY or OPENJEV_API_KEY; model with ANTHROPIC_API_KEY; else claude or codex when that CLI
                             is installed and signed in (your subscription); else agent.
                             claude: Claude Code (NAVVI_CLAUDE_MODEL, default haiku).  codex: Codex (NAVVI_CODEX_MODEL).
                             agent: the host coding agent over stdio, no key.
@@ -491,9 +491,10 @@ Sources (who answers the compile questions)
                             agent, model, claude, codex. Jev judges but cannot write. Default: the decider
                             itself, except under jev, which hands text to claude, then codex when on PATH,
                             then a metered model (ANTHROPIC_API_KEY before AI_GATEWAY_API_KEY).
-  --decider-transport <t>   gateway|typesafe: which API the jev decider is reached over. Default: gateway when
-                            AI_GATEWAY_API_KEY is set, else typesafe. Give typesafe to force api.typesafe.ai
-                            even with a Gateway key.
+  --decider-transport <t>   gateway|typesafe|openjev: which API the jev decider is reached over. Default: gateway when
+                            AI_GATEWAY_API_KEY is set, else typesafe when TYPESAFE_API_KEY is set, else openjev when
+                            OPENJEV_API_KEY is set. Give typesafe to force api.typesafe.ai, or openjev to force
+                            api.openjev.sh, even with other keys present.
   --rubric <id=rule>        A case rubric carried verbatim into the spec, and quoted to whoever
                             decides between competing readings (repeatable), e.g.
                             --rubric "list-price=the list price is the crossed-out one, never Precio Club".

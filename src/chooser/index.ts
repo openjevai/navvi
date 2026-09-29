@@ -10,7 +10,7 @@ export * from "./chooser.js";
 export * from "./questions.js";
 export { AgentChooser, ANSWER_WITH, loadAnswersFile, mergeAnswers, questionKey, readQuestionsFile, QUESTIONS_START, QUESTIONS_END, PROTOCOL, type AgentChooserOptions, type AgentMode, type QuestionBatchFile, type StoredAnswer } from "./agent.js";
 export { CliChooser, CliUnavailableError, CLI_TIMEOUT_MS, DEFAULT_CLAUDE_MODEL, HARNESS_LABEL, SIGN_IN_COMMAND, extractJsonObject, findOnPath, probeCli, processRunner, readClaudeEnvelope, readCodexEvents, renderPrompt, resetProbeCache, type CliChooserOptions, type CliHarness, type CliProbe, type CliRunner, type CliRunResult } from "./cli.js";
-export { JevChooser, TypeSafeEvaluationModel, JEV_PRICE_PER_MILLION_INPUT_USD, JEV_MAX_STATE_TOKENS, JEV_GATEWAY_MODEL_ID, missingCredentialsMessage, noWriterMessage, type JevChooserOptions, type JevProvider } from "./jev.js";
+export { JevChooser, TypeSafeEvaluationModel, JEV_PRICE_PER_MILLION_INPUT_USD, JEV_MAX_STATE_TOKENS, JEV_GATEWAY_MODEL_ID, OPENJEV_API_URL, OPENJEV_MODEL_ID, missingCredentialsMessage, noWriterMessage, type JevChooserOptions, type JevProvider } from "./jev.js";
 export { ModelChooser, MODEL_PRICES, DEFAULT_MODEL_ID, DEFAULT_MODEL_STATE_CHARS, priceFor, type ModelChooserOptions } from "./model.js";
 export { RecordedChooser, RecordingChooser, DEFAULT_RECORDED_DIR, type RecordedChooserOptions, type RecordingChooserOptions, type RecordedAnswerFile } from "./recorded.js";
 export { Budget, BudgetExhaustedError, ModelUnavailableError, NeedsHumanError, NavviError } from "../billing/budget.js";
@@ -254,7 +254,7 @@ const HARNESS_ORDER: CliHarness[] = ["claude", "codex"];
  * the whole arrangement in one line, so nothing about who answers is hidden.
  */
 function jevReason(env: NodeJS.ProcessEnv, writer: Writer | undefined): string {
-  const key = env.AI_GATEWAY_API_KEY ? "AI_GATEWAY_API_KEY" : "TYPESAFE_API_KEY";
+  const key = env.AI_GATEWAY_API_KEY ? "AI_GATEWAY_API_KEY" : env.TYPESAFE_API_KEY ? "TYPESAFE_API_KEY" : "OPENJEV_API_KEY";
   const fallback = env.AI_GATEWAY_API_KEY && env.TYPESAFE_API_KEY ? ", TypeSafe API as fallback" : "";
   const text = writer ?? derivedWriter(env);
   const writes = text

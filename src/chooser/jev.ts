@@ -40,6 +40,8 @@ export const JEV_MAX_STATE_TOKENS = 32_000;
 export const JEV_GATEWAY_MODEL_ID = "typesafe-ai/jev";
 export const JEV_DIRECT_MODEL_ID = "jev-latest";
 export const TYPESAFE_API_URL = "https://api.typesafe.ai/v1/systemone";
+export const OPENJEV_API_URL = "https://api.openjev.sh/v1/systemone";
+export const OPENJEV_MODEL_ID = "openjev";
 export const JEV_TIMEOUT_MS = 15_000;
 
 /** U14: the decider's transport. Named `deciderTransport` on the run input. */
@@ -68,7 +70,7 @@ export interface JevChooserOptions extends BaseChooserOptions {
 export function missingCredentialsMessage(chooser: "jev" | "model"): string {
   return (
     `chooser "${chooser}" has no credentials. Set AI_GATEWAY_API_KEY (Vercel AI Gateway), ` +
-    `TYPESAFE_API_KEY (direct Jev) or ANTHROPIC_API_KEY (model chooser), pass the key in the run input, ` +
+    `TYPESAFE_API_KEY (direct Jev), OPENJEV_API_KEY (OpenJEV community gateway to Jev) or ANTHROPIC_API_KEY (model chooser), pass the key in the run input, ` +
     `or use \`chooser: agent\`, which needs no key.`
   );
 }
@@ -90,8 +92,10 @@ function selectProvider(options: JevChooserOptions, env: NodeJS.ProcessEnv): Sel
   if (options.apiKey) return { provider: options.provider ?? "gateway", apiKey: options.apiKey };
   if (options.provider === "gateway" && env.AI_GATEWAY_API_KEY) return { provider: "gateway", apiKey: env.AI_GATEWAY_API_KEY };
   if (options.provider === "typesafe" && env.TYPESAFE_API_KEY) return { provider: "typesafe", apiKey: env.TYPESAFE_API_KEY };
+  if (options.provider === "openjev" && env.OPENJEV_API_KEY) return { provider: "openjev", apiKey: env.OPENJEV_API_KEY };
   if (!options.provider && env.AI_GATEWAY_API_KEY) return { provider: "gateway", apiKey: env.AI_GATEWAY_API_KEY };
   if (!options.provider && env.TYPESAFE_API_KEY) return { provider: "typesafe", apiKey: env.TYPESAFE_API_KEY };
+  if (!options.provider && env.OPENJEV_API_KEY) return { provider: "openjev", apiKey: env.OPENJEV_API_KEY };
   throw new ConfigurationError(missingCredentialsMessage("jev"));
 }
 
@@ -221,6 +225,8 @@ export class JevChooser extends BaseChooser {
     this.model =
       selection.provider === "gateway"
         ? createGateway({ apiKey: selection.apiKey, fetch: options.fetch }).evaluationModel(JEV_GATEWAY_MODEL_ID)
+        : selection.provider === "openjev"
+        ? new TypeSafeEvaluationModel({ apiKey: selection.apiKey, fetch: options.fetch, url: OPENJEV_API_URL, modelId: OPENJEV_MODEL_ID, provider: "openjev", label: "OpenJEV" })
         : new TypeSafeEvaluationModel({ apiKey: selection.apiKey, fetch: options.fetch });
   }
 
@@ -302,18 +308,21 @@ export class JevChooser extends BaseChooser {
  */
 export class TypeSafeEvaluationModel implements Experimental_EvaluationModelV4 {
   readonly specificationVersion = "v4" as const;
-  readonly provider = "typesafe";
+  readonly provider: string;
   readonly modelId: string;
   readonly supportedQuestionTypes = ["choice", "boolean", "score"] as const;
   private readonly apiKey: string;
   private readonly fetchImpl: typeof fetch;
   private readonly url: string;
+  private readonly label: string;
 
-  constructor(options: { apiKey: string; fetch?: typeof fetch; modelId?: string; url?: string }) {
+  constructor(options: { apiKey: string; fetch?: typeof fetch; modelId?: string; url?: string; provider?: string; label?: string }) {
     this.apiKey = options.apiKey;
     this.fetchImpl = options.fetch ?? fetch;
     this.modelId = options.modelId ?? JEV_DIRECT_MODEL_ID;
     this.url = options.url ?? TYPESAFE_API_URL;
+    this.provider = options.provider ?? "typesafe";
+    this.label = options.label ?? "TypeSafe";
   }
 
   async doEvaluate(options: Experimental_EvaluationModelV4CallOptions): Promise<Experimental_EvaluationModelV4Result> {
@@ -333,7 +342,7 @@ export class TypeSafeEvaluationModel implements Experimental_EvaluationModelV4 {
     });
     if (!response.ok) {
       throw new APICallError({
-        message: `TypeSafe API responded ${response.status}`,
+        message: `${this.label} API responded ${response.status}`,
         url: this.url,
         requestBodyValues: {},
         statusCode: response.status,

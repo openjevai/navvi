@@ -154,9 +154,9 @@ const DEBUG_KEY_ENV: Record<string, string> = {
 };
 
 /** Actor-only input keys: caller keys (R23) become the run's env, `scraperStore` qualifies a bare `scriptId`. None of them reaches the parsed input. */
-export const ACTOR_ONLY_KEYS = ["typesafeApiKey", "gatewayApiKey", "anthropicApiKey", "scraperStore", ...DEBUG_KEYS] as const;
+export const ACTOR_ONLY_KEYS = ["typesafeApiKey", "gatewayApiKey", "openjevApiKey", "anthropicApiKey", "scraperStore", ...DEBUG_KEYS] as const;
 
-const CALLER_KEY_ENV: Record<string, string> = { typesafeApiKey: "TYPESAFE_API_KEY", gatewayApiKey: "AI_GATEWAY_API_KEY", anthropicApiKey: "ANTHROPIC_API_KEY" };
+const CALLER_KEY_ENV: Record<string, string> = { typesafeApiKey: "TYPESAFE_API_KEY", gatewayApiKey: "AI_GATEWAY_API_KEY", openjevApiKey: "OPENJEV_API_KEY", anthropicApiKey: "ANTHROPIC_API_KEY" };
 
 
 /**
@@ -168,8 +168,8 @@ const CALLER_KEY_ENV: Record<string, string> = { typesafeApiKey: "TYPESAFE_API_K
 export function actorInput(raw: unknown, base: NodeJS.ProcessEnv = process.env): { input: Record<string, unknown>; env: NodeJS.ProcessEnv } {
   const env: NodeJS.ProcessEnv = { ...base };
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return { input: {}, env };
-  const { typesafeApiKey, gatewayApiKey, anthropicApiKey, scraperStore, ...rest } = raw as Record<string, unknown>;
-  for (const [key, value] of Object.entries({ typesafeApiKey, gatewayApiKey, anthropicApiKey })) {
+  const { typesafeApiKey, gatewayApiKey, openjevApiKey, anthropicApiKey, scraperStore, ...rest } = raw as Record<string, unknown>;
+  for (const [key, value] of Object.entries({ typesafeApiKey, gatewayApiKey, openjevApiKey, anthropicApiKey })) {
     if (typeof value === "string" && value.trim().length > 0) env[CALLER_KEY_ENV[key]!] = value.trim();
   }
   const input: Record<string, unknown> = { ...rest };

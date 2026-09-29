@@ -300,15 +300,17 @@
     "deciderTransport": {
       "title": "Decider transport",
       "type": "string",
-      "description": "Which API the jev decider is reached over: typesafe is the official TypeSafe API (api.typesafe.ai), gateway is the Vercel AI Gateway route. Leave empty to follow the key, gateway first when both are given; set typesafe to force the TypeSafe API even with a Gateway key.",
+      "description": "Which API the jev decider is reached over: typesafe is the official TypeSafe API (api.typesafe.ai), gateway is the Vercel AI Gateway route, openjev is the OpenJEV community gateway (api.openjev.sh). Leave empty to follow the key, gateway first when both are given, then typesafe, then openjev; set typesafe to force the TypeSafe API, or openjev to force OpenJEV, even with other keys present.",
       "editor": "select",
       "enum": [
         "gateway",
-        "typesafe"
+        "typesafe",
+        "openjev"
       ],
       "enumTitles": [
         "gateway (Vercel AI Gateway)",
-        "typesafe (TypeSafe API)"
+        "typesafe (TypeSafe API)",
+        "openjev (OpenJEV API)"
       ],
       "nullable": true
     },
@@ -323,6 +325,13 @@
       "title": "Vercel AI Gateway key",
       "type": "string",
       "description": "Your AI Gateway key; jev runs through the gateway's typesafe-ai/jev route, model through its Anthropic route.",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "openjevApiKey": {
+      "title": "OpenJEV API key",
+      "type": "string",
+      "description": "Your OpenJEV key for the jev chooser (community gateway to the same Jev model). Get one at https://openjev.sh/dashboard.",
       "editor": "textfield",
       "isSecret": true
     },
